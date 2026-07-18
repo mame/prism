@@ -71,8 +71,9 @@ public final class ParseResult {
     public final Warning[] warnings;
     public final boolean continuable;
     public final Nodes.Source source;
+    public final long sourceHash;
 
-    public ParseResult(Nodes.Node value, MagicComment[] magicComments, Nodes.Location dataLocation, Error[] errors, Warning[] warnings, boolean continuable, Nodes.Source source) {
+    public ParseResult(Nodes.Node value, MagicComment[] magicComments, Nodes.Location dataLocation, Error[] errors, Warning[] warnings, boolean continuable, Nodes.Source source, long sourceHash) {
         this.value = value;
         this.magicComments = magicComments;
         this.dataLocation = dataLocation;
@@ -80,6 +81,7 @@ public final class ParseResult {
         this.warnings = warnings;
         this.continuable = continuable;
         this.source = source;
+        this.sourceHash = sourceHash;
     }
 }
 // @formatter:on

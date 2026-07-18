@@ -336,10 +336,15 @@ export function deserialize(array) {
 
   const continuable = buffer.readByte() !== 0;
 
+  // The source hash is 8 little-endian bytes.
+  const sourceHashBytes = buffer.readBytes(8);
+  let sourceHash = 0n;
+  for (let index = 7; index >= 0; index--) sourceHash = (sourceHash << 8n) | BigInt(sourceHashBytes[index]);
+
   const constantPoolOffset = buffer.readUint32();
   const constants = Array.from({ length: buffer.readVarInt() }, () => null);
 
-  return new ParseResult(readRequiredNode(), comments, magicComments, dataLoc, errors, warnings, continuable);
+  return new ParseResult(readRequiredNode(), comments, magicComments, dataLoc, errors, warnings, continuable, sourceHash);
 
   function readRequiredNode() {
     const type = buffer.readByte();

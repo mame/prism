@@ -101,6 +101,7 @@ public class Loader {
         ParseResult.Error[] errors = loadErrors();
         ParseResult.Warning[] warnings = loadWarnings();
         boolean continuable = buffer.get() != 0;
+        long sourceHash = buffer.getLong();
 
         int constantPoolBufferOffset = buffer.getInt();
         int constantPoolLength = loadVarUInt();
@@ -121,7 +122,7 @@ public class Loader {
             node = null;
         }
 
-        return new ParseResult(node, magicComments, dataLocation, errors, warnings, continuable, source);
+        return new ParseResult(node, magicComments, dataLocation, errors, warnings, continuable, source, sourceHash);
     }
 
     private byte[] loadString() {
