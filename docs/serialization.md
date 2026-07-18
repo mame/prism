@@ -107,6 +107,7 @@ The header is structured like the following table:
 | varuint | number of warnings |
 | warning* | warnings |
 | `1` | `1` if the source is continuable (incomplete but could become valid with more input), `0` otherwise |
+| `8` | the source hash, as a little-endian 64-bit integer |
 | `4` | content pool offset |
 | varuint | content pool size |
 

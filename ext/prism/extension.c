@@ -686,10 +686,11 @@ parse_result_create(VALUE class, const pm_parser_t *parser, VALUE value, rb_enco
         parser_errors(parser, encoding, source, freeze),
         parser_warnings(parser, encoding, source, freeze),
         pm_parser_continuable(parser) ? Qtrue : Qfalse,
-        source
+        source,
+        ULL2NUM(pm_parser_source_hash(parser))
     };
 
-    return rb_class_new_instance_freeze(8, result_argv, class, freeze);
+    return rb_class_new_instance_freeze(9, result_argv, class, freeze);
 }
 
 /******************************************************************************/

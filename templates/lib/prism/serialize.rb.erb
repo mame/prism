@@ -44,6 +44,7 @@ module Prism
       errors =         loader.load_errors(encoding, freeze)
       warnings =       loader.load_warnings(encoding, freeze)
       continuable =    loader.load_bool
+      source_hash =    loader.load_uint64
       cpool_base =     loader.load_uint32
       cpool_size =     loader.load_varuint
 
@@ -53,7 +54,7 @@ module Prism
                        loader.load_constant_pool(constant_pool)
       raise unless     loader.eof?
 
-      result = ParseResult.new(node, comments, magic_comments, data_loc, errors, warnings, continuable, source)
+      result = ParseResult.new(node, comments, magic_comments, data_loc, errors, warnings, continuable, source, source_hash)
       result.freeze if freeze
 
       input.force_encoding(encoding)
@@ -99,9 +100,10 @@ module Prism
       errors =         loader.load_errors(encoding, freeze)
       warnings =       loader.load_warnings(encoding, freeze)
       continuable =    loader.load_bool
+      source_hash =    loader.load_uint64
       raise unless     loader.eof?
 
-      result = LexResult.new(tokens, comments, magic_comments, data_loc, errors, warnings, continuable, source)
+      result = LexResult.new(tokens, comments, magic_comments, data_loc, errors, warnings, continuable, source, source_hash)
 
       tokens.each do |token|
         token[0].value.force_encoding(encoding)
@@ -173,6 +175,7 @@ module Prism
       errors =         loader.load_errors(encoding, freeze)
       warnings =       loader.load_warnings(encoding, freeze)
       continuable =    loader.load_bool
+      source_hash =    loader.load_uint64
       cpool_base =     loader.load_uint32
       cpool_size =     loader.load_varuint
 
@@ -183,7 +186,7 @@ module Prism
       raise unless     loader.eof?
 
       value = [node, tokens] #: [ProgramNode, Array[[Token, Integer]]]
-      result = ParseLexResult.new(value, comments, magic_comments, data_loc, errors, warnings, continuable, source)
+      result = ParseLexResult.new(value, comments, magic_comments, data_loc, errors, warnings, continuable, source, source_hash)
 
       tokens.each do |token|
         token[0].value.force_encoding(encoding)
@@ -500,6 +503,11 @@ module Prism
       #: () -> Integer
       def load_uint32
         (io.read(4) or raise).unpack1("L") #: Integer
+      end
+
+      #: () -> Integer
+      def load_uint64
+        (io.read(8) or raise).unpack1("Q<") #: Integer
       end
 
       #: (ConstantPool constant_pool, Encoding encoding, bool freeze) -> node?
