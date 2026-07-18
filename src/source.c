@@ -2,6 +2,7 @@
 
 #include "prism/internal/allocator.h"
 #include "prism/internal/buffer.h"
+#include "prism/version.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -516,3 +517,27 @@ const uint8_t *
 pm_source_source(const pm_source_t *source) {
     return source->source;
 }
+
+/**
+ * Compute the source hash of the given bytes in a single call. The hash is
+ * currently a 64-bit FNV-1a hash over the prism version string, its
+ * terminating NUL byte, and the given bytes.
+ */
+uint64_t
+pm_source_versioned_hash(const uint8_t *data, size_t length) {
+    uint64_t hash = UINT64_C(0xcbf29ce484222325);
+
+    // Mix in the prism version string so that hash values are not comparable
+    // across prism versions.
+    for (const char *cursor = PRISM_VERSION; ; cursor++) {
+        hash = (hash ^ (uint8_t) *cursor) * UINT64_C(0x00000100000001b3);
+        if (*cursor == '\0') break;
+    }
+
+    for (size_t index = 0; index < length; index++) {
+        hash = (hash ^ data[index]) * UINT64_C(0x00000100000001b3);
+    }
+
+    return hash;
+}
+

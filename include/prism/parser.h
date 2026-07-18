@@ -97,6 +97,23 @@ PRISM_EXPORTED_FUNCTION const uint8_t * pm_parser_start(const pm_parser_t *parse
 PRISM_EXPORTED_FUNCTION const uint8_t * pm_parser_end(const pm_parser_t *parser) PRISM_NONNULL(1);
 
 /**
+ * Returns a hash of the source that was parsed by the given parser, which can
+ * be used to detect changes to the source when it is parsed again. This
+ * should only be called after parsing has completed. The hash covers the
+ * source up to and including the __END__ line, if any: the data section is
+ * not part of the code.
+ *
+ * The purpose of this hash is to prevent accidents, not to defend against
+ * attacks: it is not cryptographically secure. Also, the underlying hash
+ * algorithm may change in a future version of prism, so hash values are not
+ * guaranteed to be stable across prism versions.
+ *
+ * @param parser the parser whose source we want to hash
+ * @returns the hash of the parsed source
+ */
+PRISM_EXPORTED_FUNCTION uint64_t pm_parser_source_hash(const pm_parser_t *parser) PRISM_NONNULL(1);
+
+/**
  * Returns the line that the parser was considered to have started on.
  *
  * @param parser the parser whose start line we want to get

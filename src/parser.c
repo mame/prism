@@ -5,6 +5,7 @@
 #include "prism/internal/diagnostic.h"
 #include "prism/internal/encoding.h"
 #include "prism/internal/magic_comments.h"
+#include "prism/internal/source.h"
 
 #include <stdlib.h>
 
@@ -48,6 +49,24 @@ pm_parser_start(const pm_parser_t *parser) {
 const uint8_t *
 pm_parser_end(const pm_parser_t *parser) {
     return parser->end;
+}
+
+/**
+ * Returns a hash of the source that was parsed by the given parser.
+ */
+uint64_t
+pm_parser_source_hash(const pm_parser_t *parser) {
+    const uint8_t *end = parser->end;
+
+    // The data section after an __END__ marker is not part of the code, so
+    // the hash covers the source only up to the end of the __END__ line.
+    if (parser->data_loc.length != 0) {
+        end = parser->start + parser->data_loc.start;
+        while (end < parser->end && *end != '\n') end++;
+        if (end < parser->end) end++;
+    }
+
+    return pm_source_versioned_hash(parser->start, (size_t) (end - parser->start));
 }
 
 /**

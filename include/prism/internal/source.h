@@ -59,6 +59,12 @@ struct pm_source_t {
 };
 
 /*
+ * Compute the source hash of the given bytes, as returned by
+ * pm_parser_source_hash.
+ */
+uint64_t pm_source_versioned_hash(const uint8_t *data, size_t length);
+
+/*
  * Read from a stream into the source's internal buffer. This is used by
  * pm_parse_stream to incrementally read the source.
  */
